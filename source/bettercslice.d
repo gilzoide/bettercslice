@@ -15,13 +15,18 @@ struct Slice(T)
         this.ptr = slice.ptr;
         this.length = slice.length;
     }
-    this(inout(void)* ptr, size_t bufferLength) inout
+    this(inout(void)* ptr, size_t bytesLength) inout
     {
-        this(ptr[0..bufferLength]);
+        this(ptr[0..bytesLength]);
     }
     this(inout(void)[] slice) inout
     {
         this(cast(inout(T)[]) slice);
+    }
+    this(size_t N)(inout(T)[N] array) inout
+    {
+        this.ptr = array.ptr;
+        this.length = N;
     }
 
     invariant
@@ -43,6 +48,11 @@ struct Slice(T)
     bool opCast(U : bool)() const
     {
         return !empty;
+    }
+
+    @property size_t bytesLength() const
+    {
+        return length * T.sizeof;
     }
 
     // InputRange
