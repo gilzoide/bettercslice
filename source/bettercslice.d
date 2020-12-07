@@ -6,6 +6,11 @@ struct Slice(T)
     T* ptr;
     size_t length;
 
+    struct IndexRange
+    {
+        size_t from, to;
+    }
+
     // InputRange
     @property ref inout(T) front() inout
     {
@@ -46,11 +51,11 @@ struct Slice(T)
         return ptr[i];
     }
 
-    inout(Slice) opIndex(const size_t[2] s) inout
+    inout(Slice) opIndex(const IndexRange r) inout
     {
         typeof(return) newSlice = {
-            ptr: ptr + s[0],
-            length: s[1] - s[0],
+            ptr: ptr + r.from,
+            length: r.to - r.from,
         };
         return newSlice;
     }
@@ -65,9 +70,13 @@ struct Slice(T)
         return this;
     }
 
-    size_t[2] opSlice(size_t pos : 0)(size_t from, size_t to)
+    IndexRange opSlice(size_t pos : 0)(size_t from, size_t to)
     {
-        return [from, to];
+        typeof(return) range = {
+            from: from,
+            to: to,
+        };
+        return range;
     }
 
     // InputAssignable
