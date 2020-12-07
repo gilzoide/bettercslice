@@ -6,6 +6,29 @@ struct Slice(T)
     T* ptr;
     size_t length;
 
+    this(inout(T)* ptr, size_t length) inout
+    {
+        this(ptr[0..length]);
+    }
+    this(inout(T)[] slice) inout
+    {
+        this.ptr = slice.ptr;
+        this.length = slice.length;
+    }
+    this(inout(void)* ptr, size_t bufferLength) inout
+    {
+        this(ptr[0..bufferLength]);
+    }
+    this(inout(void)[] slice) inout
+    {
+        this(cast(inout(T)[]) slice);
+    }
+
+    invariant
+    {
+        assert((ptr == null && length == 0) || ptr != null);
+    }
+
     struct IndexRange
     {
         size_t from, to;
@@ -64,11 +87,7 @@ struct Slice(T)
 
     inout(Slice) opIndex(const IndexRange r) inout
     {
-        typeof(return) newSlice = {
-            ptr: ptr + r.from,
-            length: r.to - r.from,
-        };
-        return newSlice;
+        return typeof(return)(ptr + r.from, r.to - r.from);
     }
 
     size_t opDollar(size_t pos : 0)() const
@@ -137,7 +156,8 @@ unittest
 
     int[5] array = [1, 2, 3, 4, 5];
 
-    auto s = Slice!int(array.ptr, array.length);
+    auto s = Slice!int(array);
+    Slice!int s2 = [1, 2, 3, 4, 5];
     assert(s.dSlice == array);
     foreach (i, value; s.enumerate)
     {
@@ -159,4 +179,11 @@ unittest
     s.filter!(x => x % 2 == 1).writeln;
 
     alias StringSlice = Slice!string;
+}
+
+unittest
+{
+    Slice!int n;
+    assert(n.empty);
+    assert(!n);
 }
