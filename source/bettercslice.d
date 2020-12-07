@@ -16,6 +16,12 @@ struct Slice(T)
         return ptr[0..length];
     }
 
+    alias opCast(U : T[]) = dSlice;
+    bool opCast(U : bool)() const
+    {
+        return !empty;
+    }
+
     // InputRange
     @property ref inout(T) front() inout
     {
@@ -144,6 +150,9 @@ unittest
         assert(value == array[$ - 1 - i]);
     }
 
+    assert(__traits(compiles, cast(int[]) s));
+
+    assert(cast(bool) s);
     writeln(s.stride(3));
 
     writeln("");
