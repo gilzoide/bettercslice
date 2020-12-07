@@ -1,0 +1,19 @@
+{
+  "name": "bettercslice",
+  "authors": [
+    "gilzoide"
+  ],
+  "description": "Slice implementing RandomAccessRange compatible with betterC",
+  "license": "public license",
+  "configurations": [
+    {
+      "name": "library"
+    },
+    {
+      "name": "betterC",
+      "buildOptions": [
+        "betterC"
+      ]
+    }
+  ]
+}
