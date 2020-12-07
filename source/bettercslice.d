@@ -11,6 +11,11 @@ struct Slice(T)
         size_t from, to;
     }
 
+    inout(T)[] dSlice() inout
+    {
+        return ptr[0..length];
+    }
+
     // InputRange
     @property ref inout(T) front() inout
     {
@@ -127,16 +132,16 @@ unittest
     int[5] array = [1, 2, 3, 4, 5];
 
     auto s = Slice!int(array.ptr, array.length);
-    const s2 = s;
-    writeln(s2[0]);
-    foreach (i; s)
+    assert(s.dSlice == array);
+    foreach (i, value; s.enumerate)
     {
-        writeln(i);
+        assert(value == array[i]);
     }
-    writeln("");
-    foreach (i; s.retro)
+
+    assert(s.dSlice.retro == array[].retro);
+    foreach (i, value; s.retro.enumerate)
     {
-        writeln(i);
+        assert(value == array[$ - 1 - i]);
     }
 
     writeln(s.stride(3));
